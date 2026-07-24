@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Synthowser — browser synth</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Synthowser</h1>
+    <p class="subtitle">A polyphonic synthesizer that runs entirely in your browser.</p>
+  </header>
+
+  <main class="panel">
+    <section class="controls">
+      <div class="control-group">
+        <h2>Oscillator</h2>
+        <label>
+          Waveform
+          <select id="waveform">
+            <option value="sawtooth">Sawtooth</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="sine">Sine</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="control-group">
+        <h2>Envelope</h2>
+        <label>Attack <span class="value" data-for="attack">0.02s</span>
+          <input type="range" id="attack" min="0.001" max="2" step="0.001" value="0.02" />
+        </label>
+        <label>Decay <span class="value" data-for="decay">0.15s</span>
+          <input type="range" id="decay" min="0.001" max="2" step="0.001" value="0.15" />
+        </label>
+        <label>Sustain <span class="value" data-for="sustain">0.6</span>
+          <input type="range" id="sustain" min="0" max="1" step="0.01" value="0.6" />
+        </label>
+        <label>Release <span class="value" data-for="release">0.3s</span>
+          <input type="range" id="release" min="0.001" max="3" step="0.001" value="0.3" />
+        </label>
+      </div>
+
+      <div class="control-group">
+        <h2>Filter</h2>
+        <label>Cutoff <span class="value" data-for="cutoff">4000Hz</span>
+          <input type="range" id="cutoff" min="80" max="12000" step="1" value="4000" />
+        </label>
+        <label>Resonance <span class="value" data-for="resonance">1</span>
+          <input type="range" id="resonance" min="0" max="20" step="0.1" value="1" />
+        </label>
+      </div>
+
+      <div class="control-group">
+        <h2>Master</h2>
+        <label>Volume <span class="value" data-for="volume">70%</span>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7" />
+        </label>
+        <label>Octave <span class="value" data-for="octave">4</span>
+          <div class="octave-buttons">
+            <button type="button" id="octave-down" aria-label="Octave down">&minus;</button>
+            <button type="button" id="octave-up" aria-label="Octave up">+</button>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <section class="keyboard-wrap">
+      <p class="hint">Play with your mouse/touch, or the keys <kbd>A</kbd>&ndash;<kbd>K</kbd> / black keys <kbd>W</kbd><kbd>E</kbd><kbd>T</kbd><kbd>Y</kbd><kbd>U</kbd>. <kbd>Z</kbd>/<kbd>X</kbd> shift octave.</p>
+      <div id="keyboard" class="keyboard"></div>
+    </section>
+
+    <section class="recorder">
+      <h2>Recording</h2>
+      <div class="recorder-controls">
+        <button type="button" id="record-btn" class="record-btn">
+          <span class="dot"></span> Record
+        </button>
+        <span id="record-status" class="record-status">Not recording</span>
+      </div>
+      <ul id="recordings" class="recordings"></ul>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p id="audio-warning" class="warning" hidden>
+      Your browser doesn't support audio recording (MediaRecorder). You can still play the synth.
+    </p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
