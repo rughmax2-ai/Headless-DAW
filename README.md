@@ -1,4 +1,4 @@
-# Synthowser
+# Headless-DAW
 
 A polyphonic synthesizer that runs entirely in the browser, built with the Web Audio API — no build step, no dependencies.
 
