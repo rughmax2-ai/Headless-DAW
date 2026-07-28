@@ -31,6 +31,9 @@
   ];
   const NOTE_NAMES = ["C","","D","","E","F","","G","","A","","B"];
 
+  const MIN_GAIN = 0.001; // minimum value for exponential envelope ramps (cannot ramp to 0)
+  const MIN_FREQ = 0.5;   // minimum Hz for exponential frequency ramps
+
   function midiToName(midi) {
     const oct  = Math.floor(midi / 12) - 1;
     const name = NOTE_NAMES[midi % 12];
@@ -274,9 +277,9 @@
       const gain = ctx.createGain();
       osc.type = "sine";
       osc.frequency.setValueAtTime(160, time);
-      osc.frequency.exponentialRampToValueAtTime(0.001, time + 0.45);
+      osc.frequency.exponentialRampToValueAtTime(MIN_FREQ, time + 0.45);
       gain.gain.setValueAtTime(1.2, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.45);
+      gain.gain.exponentialRampToValueAtTime(MIN_GAIN, time + 0.45);
       osc.connect(gain); gain.connect(dest);
       osc.start(time); osc.stop(time + 0.46);
       osc.addEventListener("ended", () => { osc.disconnect(); gain.disconnect(); });
@@ -289,7 +292,7 @@
       nhpf.type = "highpass"; nhpf.frequency.value = 1200;
       const ng = ctx.createGain();
       ng.gain.setValueAtTime(0.9, time);
-      ng.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
+      ng.gain.exponentialRampToValueAtTime(MIN_GAIN, time + 0.18);
       noise.connect(nhpf); nhpf.connect(ng); ng.connect(dest);
       noise.start(time); noise.stop(time + 0.25);
       noise.addEventListener("ended", () => { noise.disconnect(); nhpf.disconnect(); ng.disconnect(); });
@@ -298,7 +301,7 @@
       const og   = ctx.createGain();
       osc.type = "triangle"; osc.frequency.value = 200;
       og.gain.setValueAtTime(0.55, time);
-      og.gain.exponentialRampToValueAtTime(0.001, time + 0.09);
+      og.gain.exponentialRampToValueAtTime(MIN_GAIN, time + 0.09);
       osc.connect(og); og.connect(dest);
       osc.start(time); osc.stop(time + 0.1);
       osc.addEventListener("ended", () => { osc.disconnect(); og.disconnect(); });
@@ -310,7 +313,7 @@
       bpf.type = "bandpass"; bpf.frequency.value = 10000; bpf.Q.value = 0.6;
       const g = ctx.createGain();
       g.gain.setValueAtTime(0.5, time);
-      g.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+      g.gain.exponentialRampToValueAtTime(MIN_GAIN, time + 0.05);
       noise.connect(bpf); bpf.connect(g); g.connect(dest);
       noise.start(time); noise.stop(time + 0.07);
       noise.addEventListener("ended", () => { noise.disconnect(); bpf.disconnect(); g.disconnect(); });
@@ -322,7 +325,7 @@
       bpf.type = "bandpass"; bpf.frequency.value = 9000; bpf.Q.value = 0.4;
       const g = ctx.createGain();
       g.gain.setValueAtTime(0.5, time);
-      g.gain.exponentialRampToValueAtTime(0.001, time + 0.32);
+      g.gain.exponentialRampToValueAtTime(MIN_GAIN, time + 0.32);
       noise.connect(bpf); bpf.connect(g); g.connect(dest);
       noise.start(time); noise.stop(time + 0.36);
       noise.addEventListener("ended", () => { noise.disconnect(); bpf.disconnect(); g.disconnect(); });
@@ -337,7 +340,7 @@
         const t = time + off;
         g.gain.setValueAtTime(0, t);
         g.gain.linearRampToValueAtTime(0.7, t + 0.005);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+        g.gain.exponentialRampToValueAtTime(MIN_GAIN, t + 0.09);
         noise.connect(bpf); bpf.connect(g); g.connect(dest);
         noise.start(t); noise.stop(t + 0.1);
         noise.addEventListener("ended", () => { noise.disconnect(); bpf.disconnect(); g.disconnect(); });
@@ -350,7 +353,7 @@
       osc.frequency.setValueAtTime(180, time);
       osc.frequency.exponentialRampToValueAtTime(60, time + 0.25);
       gain.gain.setValueAtTime(0.9, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.35);
+      gain.gain.exponentialRampToValueAtTime(MIN_GAIN, time + 0.35);
       osc.connect(gain); gain.connect(dest);
       osc.start(time); osc.stop(time + 0.36);
       osc.addEventListener("ended", () => { osc.disconnect(); gain.disconnect(); });
@@ -587,7 +590,7 @@
     pad.addEventListener("pointerdown",  e => { e.preventDefault(); chordOn(); });
     pad.addEventListener("pointerup",    ()  => chordOff());
     pad.addEventListener("pointerleave", ()  => { if (pad.classList.contains("active")) chordOff(); });
-    pad.addEventListener("keydown", e => { if ((e.key === " " || e.key === "Enter") && !pad.classList.contains("active")) chordOn(); });
+    pad.addEventListener("keydown", e => { if ((e.key === " " || e.key === "Enter") && !pad.classList.contains("active")) { e.preventDefault(); chordOn(); } });
     pad.addEventListener("keyup",   e => { if (e.key === " " || e.key === "Enter") chordOff(); });
 
     els.chordGrid.appendChild(pad);
