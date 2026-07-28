@@ -3,92 +3,141 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Synthowser — browser synth</title>
+  <title>SYNTH-X — Headless DAW</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <div class="scanlines" aria-hidden="true"></div>
+
   <header class="app-header">
-    <h1>Synthowser</h1>
-    <p class="subtitle">A polyphonic synthesizer that runs entirely in your browser.</p>
+    <canvas id="viz" class="viz" aria-hidden="true"></canvas>
+    <div class="header-text">
+      <h1 class="logo">SYNTH<span class="logo-x">&#8209;X</span></h1>
+      <p class="tagline">HEADLESS DAW &nbsp;&bull;&nbsp; BROWSER EDITION &nbsp;&bull;&nbsp; 4&#8209;BAR LOOP</p>
+    </div>
   </header>
 
-  <main class="panel">
-    <section class="controls">
-      <div class="control-group">
-        <h2>Oscillator</h2>
-        <label>
-          Waveform
-          <select id="waveform">
-            <option value="sawtooth">Sawtooth</option>
-            <option value="square">Square</option>
-            <option value="triangle">Triangle</option>
-            <option value="sine">Sine</option>
-          </select>
-        </label>
-      </div>
+  <main class="layout">
 
-      <div class="control-group">
-        <h2>Envelope</h2>
-        <label>Attack <span class="value" data-for="attack">0.02s</span>
-          <input type="range" id="attack" min="0.001" max="2" step="0.001" value="0.02" />
-        </label>
-        <label>Decay <span class="value" data-for="decay">0.15s</span>
-          <input type="range" id="decay" min="0.001" max="2" step="0.001" value="0.15" />
-        </label>
-        <label>Sustain <span class="value" data-for="sustain">0.6</span>
-          <input type="range" id="sustain" min="0" max="1" step="0.01" value="0.6" />
-        </label>
-        <label>Release <span class="value" data-for="release">0.3s</span>
-          <input type="range" id="release" min="0.001" max="3" step="0.001" value="0.3" />
-        </label>
-      </div>
-
-      <div class="control-group">
-        <h2>Filter</h2>
-        <label>Cutoff <span class="value" data-for="cutoff">4000Hz</span>
-          <input type="range" id="cutoff" min="80" max="12000" step="1" value="4000" />
-        </label>
-        <label>Resonance <span class="value" data-for="resonance">1</span>
-          <input type="range" id="resonance" min="0" max="20" step="0.1" value="1" />
-        </label>
-      </div>
-
-      <div class="control-group">
-        <h2>Master</h2>
-        <label>Volume <span class="value" data-for="volume">70%</span>
-          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.7" />
-        </label>
-        <label>Octave <span class="value" data-for="octave">4</span>
-          <div class="octave-buttons">
-            <button type="button" id="octave-down" aria-label="Octave down">&minus;</button>
-            <button type="button" id="octave-up" aria-label="Octave up">+</button>
-          </div>
-        </label>
+    <!-- ═══ LOOP ENGINE ═══ -->
+    <section class="loop-panel glass" aria-label="Loop engine">
+      <header class="panel-hdr">
+        <span class="panel-title">LOOP ENGINE</span>
+        <span class="panel-badge">4 BARS &middot; 16 BEATS</span>
+      </header>
+      <div class="loop-body">
+        <div class="bpm-group">
+          <span class="ctrl-label">BPM</span>
+          <span class="ctrl-val" id="bpm-val">120</span>
+          <input type="range" id="bpm" min="60" max="200" step="1" value="120" class="h-range" />
+        </div>
+        <div class="loop-btns">
+          <button id="btn-play" type="button" class="lbtn play">&#9654; PLAY</button>
+          <button id="btn-rec"  type="button" class="lbtn rec">&#9210; REC</button>
+          <button id="btn-clr"  type="button" class="lbtn clr">&#10005; CLEAR</button>
+        </div>
+        <div class="beat-row" id="beat-row" role="meter" aria-label="Loop position"></div>
       </div>
     </section>
 
-    <section class="keyboard-wrap">
-      <p class="hint">Play with your mouse/touch, or the keys <kbd>A</kbd>&ndash;<kbd>K</kbd> / black keys <kbd>W</kbd><kbd>E</kbd><kbd>T</kbd><kbd>Y</kbd><kbd>U</kbd>. <kbd>Z</kbd>/<kbd>X</kbd> shift octave.</p>
+    <!-- ═══ SYNTHESIZER ═══ -->
+    <section class="synth-panel glass" aria-label="Synthesizer parameters">
+      <header class="panel-hdr">
+        <span class="panel-title">SYNTHESIZER</span>
+      </header>
+      <div class="synth-grid">
+        <div class="cg">
+          <div class="cg-title">OSC</div>
+          <label class="cg-row">WAVE
+            <select id="waveform" class="neo-sel">
+              <option value="sawtooth">SAW</option>
+              <option value="square">SQR</option>
+              <option value="triangle">TRI</option>
+              <option value="sine">SIN</option>
+            </select>
+          </label>
+        </div>
+        <div class="cg">
+          <div class="cg-title">ENV</div>
+          <label class="cg-row">ATK<span class="cv" data-for="attack">0.020s</span><input type="range" id="attack" min="0.001" max="2" step="0.001" value="0.02" /></label>
+          <label class="cg-row">DEC<span class="cv" data-for="decay">0.150s</span><input type="range" id="decay"  min="0.001" max="2" step="0.001" value="0.15" /></label>
+          <label class="cg-row">SUS<span class="cv" data-for="sustain">0.60</span><input type="range" id="sustain" min="0" max="1" step="0.01" value="0.6" /></label>
+          <label class="cg-row">REL<span class="cv" data-for="release">0.300s</span><input type="range" id="release" min="0.001" max="3" step="0.001" value="0.3" /></label>
+        </div>
+        <div class="cg">
+          <div class="cg-title">FLT</div>
+          <label class="cg-row">CUT<span class="cv" data-for="cutoff">4000Hz</span><input type="range" id="cutoff" min="80" max="12000" step="1" value="4000" /></label>
+          <label class="cg-row">RES<span class="cv" data-for="resonance">1.0</span><input type="range" id="resonance" min="0" max="20" step="0.1" value="1" /></label>
+        </div>
+        <div class="cg">
+          <div class="cg-title">MST</div>
+          <label class="cg-row">VOL<span class="cv" data-for="volume">70%</span><input type="range" id="volume" min="0" max="1" step="0.01" value="0.7" /></label>
+          <label class="cg-row">OCT<span class="cv" id="oct-val">4</span>
+            <span class="oct-wrap">
+              <button type="button" id="oct-dn" class="oct-btn" aria-label="Octave down">&#8722;</button>
+              <button type="button" id="oct-up" class="oct-btn" aria-label="Octave up">+</button>
+            </span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CHORD PADS ═══ -->
+    <section class="chord-panel glass" aria-label="Chord pads">
+      <header class="panel-hdr">
+        <span class="panel-title">CHORD PADS</span>
+        <span class="panel-badge">KEY OF C</span>
+      </header>
+      <div class="chord-grid" id="chord-grid"></div>
+    </section>
+
+    <!-- ═══ LEAD RIBBON ═══ -->
+    <section class="lead-panel glass" aria-label="Lead ribbon">
+      <header class="panel-hdr">
+        <span class="panel-title">LEAD RIBBON</span>
+        <span class="lead-note" id="lead-note">&#8210;&#8210;&#8210;</span>
+      </header>
+      <div class="ribbon" id="ribbon" touch-action="none">
+        <div class="ribbon-glow" id="ribbon-glow"></div>
+        <div class="ribbon-labels" id="ribbon-labels"></div>
+      </div>
+    </section>
+
+    <!-- ═══ DRUM MACHINE ═══ -->
+    <section class="drum-panel glass" aria-label="Drum machine">
+      <header class="panel-hdr">
+        <span class="panel-title">DRUM MACHINE</span>
+      </header>
+      <div class="drum-grid" id="drum-grid"></div>
+    </section>
+
+    <!-- ═══ KEYBOARD ═══ -->
+    <section class="kbd-panel glass" aria-label="Piano keyboard">
+      <p class="hint">
+        <kbd>A</kbd>&ndash;<kbd>K</kbd> white keys &bull;
+        <kbd>W</kbd><kbd>E</kbd><kbd>T</kbd><kbd>Y</kbd><kbd>U</kbd> black keys &bull;
+        <kbd>Z</kbd>/<kbd>X</kbd> octave
+      </p>
       <div id="keyboard" class="keyboard"></div>
     </section>
 
-    <section class="recorder">
-      <h2>Recording</h2>
-      <div class="recorder-controls">
+    <!-- ═══ RECORDINGS ═══ -->
+    <section class="rec-panel glass" aria-label="Recordings">
+      <header class="panel-hdr">
+        <span class="panel-title">RECORDINGS</span>
+      </header>
+      <div class="rec-ctrls">
         <button type="button" id="record-btn" class="record-btn">
-          <span class="dot"></span> Record
+          <span class="rec-dot"></span> REC
         </button>
-        <span id="record-status" class="record-status">Not recording</span>
+        <span id="record-status" class="rec-status">READY</span>
       </div>
       <ul id="recordings" class="recordings"></ul>
     </section>
+
   </main>
 
-  <footer class="app-footer">
-    <p id="audio-warning" class="warning" hidden>
-      Your browser doesn't support audio recording (MediaRecorder). You can still play the synth.
-    </p>
-  </footer>
+  <p id="audio-warning" class="warning" hidden>&#9888; MediaRecorder not supported &mdash; playback only.</p>
 
   <script src="js/app.js"></script>
 </body>
